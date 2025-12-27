@@ -1,5 +1,29 @@
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 import { Mail, Phone, MapPin, Globe, Instagram, Linkedin, Facebook } from 'lucide-react';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut" as const,
+    },
+  },
+};
 
 const footerLinks = {
   company: [
@@ -24,18 +48,24 @@ const socialLinks = [
 ];
 
 export const Footer = () => {
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: '-100px' });
+
   return (
-    <footer className="relative pt-24 pb-8 overflow-hidden">
+    <footer className="relative pt-24 pb-8 overflow-hidden" ref={containerRef}>
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       <div className="absolute -top-40 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {/* Brand Column */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            variants={itemVariants}
             className="lg:col-span-1"
           >
             <a href="#home" className="flex items-center gap-3 mb-6">
@@ -55,12 +85,7 @@ export const Footer = () => {
           </motion.div>
 
           {/* Company Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-          >
+          <motion.div variants={itemVariants}>
             <h4 className="font-display font-bold text-lg mb-6">Company</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
@@ -77,12 +102,7 @@ export const Footer = () => {
           </motion.div>
 
           {/* Resources Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div variants={itemVariants}>
             <h4 className="font-display font-bold text-lg mb-6">Resources</h4>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
@@ -99,12 +119,7 @@ export const Footer = () => {
           </motion.div>
 
           {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
+          <motion.div variants={itemVariants}>
             <h4 className="font-display font-bold text-lg mb-6">Get in Touch</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-center gap-3">
@@ -135,7 +150,7 @@ export const Footer = () => {
               ))}
             </div>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border/50">
