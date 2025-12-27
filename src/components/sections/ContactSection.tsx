@@ -1,11 +1,33 @@
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+
+const formVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const inputVariants = {
+  hidden: { opacity: 0, x: 20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut" as const,
+    },
+  },
+};
 
 export const ContactSection = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -58,28 +80,42 @@ export const ContactSection = () => {
           >
             <div className="glass-card rounded-3xl p-8">
               {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <Input
-                    placeholder="Your Name"
-                    required
-                    className="bg-muted/50 border-border/50 h-12"
-                  />
-                  <Input
-                    type="email"
-                    placeholder="Your Email Address"
-                    required
-                    className="bg-muted/50 border-border/50 h-12"
-                  />
-                  <Textarea
-                    placeholder="Tell us about your project..."
-                    rows={4}
-                    className="bg-muted/50 border-border/50 resize-none"
-                  />
-                  <Button variant="glow" size="lg" className="w-full group">
-                    Get My Free Trial
-                    <Send className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={18} />
-                  </Button>
-                </form>
+                <motion.form 
+                  onSubmit={handleSubmit} 
+                  className="space-y-5"
+                  variants={formVariants}
+                  initial="hidden"
+                  animate={isInView ? "visible" : "hidden"}
+                >
+                  <motion.div variants={inputVariants}>
+                    <Input
+                      placeholder="Your Name"
+                      required
+                      className="bg-muted/50 border-border/50 h-12"
+                    />
+                  </motion.div>
+                  <motion.div variants={inputVariants}>
+                    <Input
+                      type="email"
+                      placeholder="Your Email Address"
+                      required
+                      className="bg-muted/50 border-border/50 h-12"
+                    />
+                  </motion.div>
+                  <motion.div variants={inputVariants}>
+                    <Textarea
+                      placeholder="Tell us about your project..."
+                      rows={4}
+                      className="bg-muted/50 border-border/50 resize-none"
+                    />
+                  </motion.div>
+                  <motion.div variants={inputVariants}>
+                    <Button variant="glow" size="lg" className="w-full group">
+                      Get My Free Trial
+                      <Send className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={18} />
+                    </Button>
+                  </motion.div>
+                </motion.form>
               ) : (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}

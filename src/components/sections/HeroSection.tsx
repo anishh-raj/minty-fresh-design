@@ -1,7 +1,31 @@
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 import { Star, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import heroBg from '@/assets/hero-bg.jpg';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as const,
+    },
+  },
+};
 
 const offers = [
   '⚡ Priority Support for Early Signups',
@@ -12,10 +36,14 @@ const offers = [
 ];
 
 export const HeroSection = () => {
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: '-50px' });
+
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden pt-20"
+      ref={containerRef}
     >
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
@@ -36,16 +64,14 @@ export const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
             className="max-w-2xl"
           >
             {/* Trust Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
+              variants={itemVariants}
               className="inline-flex items-center gap-2 glass-card px-4 py-2 rounded-full mb-6"
             >
               <div className="flex">
@@ -60,9 +86,7 @@ export const HeroSection = () => {
 
             {/* Main Heading */}
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              variants={itemVariants}
               className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
             >
               <span className="text-gradient">AI-Powered</span> Digital
@@ -74,9 +98,7 @@ export const HeroSection = () => {
 
             {/* Description */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              variants={itemVariants}
               className="text-lg text-muted-foreground mb-8 max-w-lg"
             >
               UrbanMint helps startups and brands scale faster with AI-driven
@@ -86,9 +108,7 @@ export const HeroSection = () => {
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              variants={itemVariants}
               className="flex flex-wrap gap-4"
             >
               <Button variant="glow" size="lg" className="group">
@@ -103,9 +123,9 @@ export const HeroSection = () => {
 
           {/* Right Content - Offers Card */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
+            initial={{ opacity: 0, x: 60, rotateY: -10 }}
+            animate={isInView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="hidden lg:block"
           >
             <div className="glass-card rounded-3xl p-6 gradient-border">
