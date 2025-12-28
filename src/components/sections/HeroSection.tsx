@@ -1,8 +1,7 @@
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 import { Star, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import heroBg from '@/assets/hero-bg.jpg';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -35,9 +34,24 @@ const offers = [
   '🎯 Social Media Setup @ No Cost',
 ];
 
+const heroSlides = [
+  'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1600',
+  'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1600',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600',
+];
+
 export const HeroSection = () => {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: '-50px' });
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Auto-slide background images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section
@@ -45,15 +59,37 @@ export const HeroSection = () => {
       className="relative min-h-screen flex items-center overflow-hidden pt-20"
       ref={containerRef}
     >
-      {/* Background Image with Overlay */}
+      {/* Background Image Slider with Overlay */}
       <div className="absolute inset-0">
-        <img
-          src={heroBg}
-          alt="Digital agency team"
-          className="w-full h-full object-cover opacity-40"
-        />
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={currentSlide}
+            src={heroSlides[currentSlide]}
+            alt="Digital agency team"
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 0.4, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
+        </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/50" />
+      </div>
+
+      {/* Slide Indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {heroSlides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentSlide
+                ? 'bg-primary w-8'
+                : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+            }`}
+          />
+        ))}
       </div>
 
       {/* Floating Elements */}

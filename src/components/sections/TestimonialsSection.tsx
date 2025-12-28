@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -32,16 +32,28 @@ const clients = ['StyleNest', 'FinGrow', 'MarketPro', 'ScaleX', 'EcomBoost'];
 
 export const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
-  const nextTestimonial = () => {
+  const nextTestimonial = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
+  }, []);
 
-  const prevTestimonial = () => {
+  const prevTestimonial = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  }, []);
+
+  // Auto-play testimonials
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const interval = setInterval(nextTestimonial, 4000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, nextTestimonial]);
+
+  // Pause on hover
+  const handleMouseEnter = () => setIsAutoPlaying(false);
+  const handleMouseLeave = () => setIsAutoPlaying(true);
 
   return (
     <section id="testimonials" className="py-24 relative overflow-hidden">
@@ -66,6 +78,8 @@ export const TestimonialsSection = () => {
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-4xl mx-auto"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <div className="glass-card rounded-3xl p-8 md:p-12 relative">
             {/* Quote Icon */}
@@ -76,7 +90,10 @@ export const TestimonialsSection = () => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={prevTestimonial}
+                onClick={() => {
+                  prevTestimonial();
+                  setIsAutoPlaying(false);
+                }}
                 className="rounded-full bg-background/80 backdrop-blur-sm"
               >
                 <ChevronLeft size={20} />
@@ -86,7 +103,10 @@ export const TestimonialsSection = () => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={nextTestimonial}
+                onClick={() => {
+                  nextTestimonial();
+                  setIsAutoPlaying(false);
+                }}
                 className="rounded-full bg-background/80 backdrop-blur-sm"
               >
                 <ChevronRight size={20} />
@@ -140,18 +160,34 @@ export const TestimonialsSection = () => {
               </motion.div>
             </div>
 
-            {/* Dots */}
+            {/* Dots with progress indicator */}
             <div className="flex justify-center gap-2 mt-8">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  onClick={() => {
+                    setCurrentIndex(index);
+                    setIsAutoPlaying(false);
+                  }}
+                  className={`h-2.5 rounded-full transition-all relative overflow-hidden ${
                     index === currentIndex
-                      ? 'bg-primary w-8'
-                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                      ? 'bg-primary/30 w-8'
+                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50 w-2.5'
                   }`}
-                />
+                >
+                  {index === currentIndex && isAutoPlaying && (
+                    <motion.div
+                      className="absolute inset-0 bg-primary rounded-full"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 4, ease: "linear" }}
+                      style={{ transformOrigin: 'left' }}
+                    />
+                  )}
+                  {index === currentIndex && !isAutoPlaying && (
+                    <div className="absolute inset-0 bg-primary rounded-full" />
+                  )}
+                </button>
               ))}
             </div>
           </div>
