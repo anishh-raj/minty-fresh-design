@@ -2,6 +2,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { AboutSection } from '@/components/sections/AboutSection';
+import { HeadlineTicker } from '@/components/sections/HeadlineTicker';
 import { WhyUsSection } from '@/components/sections/WhyUsSection';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
@@ -16,6 +17,7 @@ const Index = () => {
       <main>
         <HeroSection />
         <AboutSection />
+        <HeadlineTicker />
         <WhyUsSection />
         <ServicesSection />
         <TestimonialsSection />
